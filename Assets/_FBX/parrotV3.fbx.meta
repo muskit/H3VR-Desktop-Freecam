@@ -1,0 +1,176 @@
+fileFormatVersion: 2
+guid: f8379bf6423487640a81402c09bfdd48
+timeCreated: 1641891663
+licenseType: Free
+ModelImporter:
+  serializedVersion: 19
+  fileIDToRecycleName:
+    100000: camo_body1
+    100002: camo_body2
+    100004: camo_body3
+    100006: camo_body4
+    100008: camo_body_antenna
+    100010: camo_body_cam
+    100012: motor_props
+    100014: motor_props.001
+    100016: motor_props.002
+    100018: motor_props.003
+    100020: //RootNode
+    100022: Propeller 1
+    100024: Propeller 1_end
+    100026: Propeller 2
+    100028: Propeller 2_end
+    100030: Propeller 3
+    100032: Propeller 3_end
+    100034: Propeller 4
+    100036: Propeller 4_end
+    100038: Quadcoter
+    100040: Quadcopter
+    100042: Body
+    100044: Propeller1
+    100046: Propeller2
+    100048: Propeller3
+    100050: Propeller4
+    100052: Propellers
+    100054: Root
+    100056: Root_end
+    100058: Armature
+    100060: dummy
+    100062: dummy_end
+    400000: camo_body1
+    400002: camo_body2
+    400004: camo_body3
+    400006: camo_body4
+    400008: camo_body_antenna
+    400010: camo_body_cam
+    400012: motor_props
+    400014: motor_props.001
+    400016: motor_props.002
+    400018: motor_props.003
+    400020: //RootNode
+    400022: Propeller 1
+    400024: Propeller 1_end
+    400026: Propeller 2
+    400028: Propeller 2_end
+    400030: Propeller 3
+    400032: Propeller 3_end
+    400034: Propeller 4
+    400036: Propeller 4_end
+    400038: Quadcoter
+    400040: Quadcopter
+    400042: Body
+    400044: Propeller1
+    400046: Propeller2
+    400048: Propeller3
+    400050: Propeller4
+    400052: Propellers
+    400054: Root
+    400056: Root_end
+    400058: Armature
+    400060: dummy
+    400062: dummy_end
+    2300000: camo_body1
+    2300002: camo_body2
+    2300004: camo_body3
+    2300006: camo_body4
+    2300008: camo_body_antenna
+    2300010: camo_body_cam
+    3300000: camo_body1
+    3300002: camo_body2
+    3300004: camo_body3
+    3300006: camo_body4
+    3300008: camo_body_antenna
+    3300010: camo_body_cam
+    4300000: camo_body1
+    4300002: camo_body2
+    4300004: camo_body3
+    4300006: camo_body4
+    4300008: camo_body_antenna
+    4300010: camo_body_cam
+    4300012: motor_props
+    4300014: motor_props.001
+    4300016: motor_props.002
+    4300018: motor_props.003
+    4300020: Propeller1
+    4300022: Propeller2
+    4300024: Propeller3
+    4300026: Propeller4
+    9500000: //RootNode
+    13700000: motor_props
+    13700002: motor_props.001
+    13700004: motor_props.002
+    13700006: motor_props.003
+    13700008: Propeller1
+    13700010: Propeller2
+    13700012: Propeller3
+    13700014: Propeller4
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importBlendShapes: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
