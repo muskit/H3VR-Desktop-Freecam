@@ -2,6 +2,7 @@
 using System.IO;
 using System.Reflection;
 using BepInEx;
+using BepInEx.Configuration;
 using FistVR;
 using Sodalite.Api;
 using UnityEngine;
@@ -34,22 +35,34 @@ public class MeatKitPlugin : BaseUnityPlugin
 
     private bool uiIsVisible = false;
 
-    // config options
-    public static float mouseSpeed = 1f;
+    // --- CONFIGURATION --- //
+    public static ConfigEntry<bool> cfgMousePitchFlip;
+    public static ConfigEntry<bool> cfgMouseYawFlip;
+    public static ConfigEntry<float> cfgMouseSpeed;
 
     public static AssetBundle bundle;
-    private GameObject masterUI;
-
-    private void OnSceneChange(Scene arg0, LoadSceneMode arg1)
-    {
-        
-    }
+    private GameObject mainUI;
 
     private void Awake()
     {
         bundle = AssetBundle.LoadFromFile(Path.Combine(BasePath, "msk_desktopfreecam"));
-        SceneManager.sceneLoaded += OnSceneChange;
-        // TODO: Load config
+
+        // CONFIGURATION
+        cfgMousePitchFlip = Config.Bind(
+            "Controls",
+            "Mouse Pitch Flip",
+            false,
+            "Flip the mouse look direction on the pitch axis.");
+        cfgMouseYawFlip = Config.Bind(
+            "Controls",
+            "Mouse Yaw Flip",
+            false,
+            "Flip the mouse look direction on the yaw axis.");
+        cfgMouseSpeed = Config.Bind(
+            "Controls",
+            "Mouse Sensitivity",
+            2f,
+            "The speed which the camera turns relative to mouse movement.");
 
         Instantiate(bundle.LoadAsset<GameObject>("IntroText"));
 
@@ -58,17 +71,17 @@ public class MeatKitPlugin : BaseUnityPlugin
 
     private void Start()
     {
-        masterUI = Instantiate(bundle.LoadAsset<GameObject>("MasterUI"));
-        DontDestroyOnLoad(masterUI);
+        mainUI = Instantiate(bundle.LoadAsset<GameObject>("MainUI"));
+        DontDestroyOnLoad(mainUI);
         SetUIVisibility(uiIsVisible);
     }
     
     private void SetUIVisibility(bool state)
     {
-        masterUI.transform.GetChild(0).gameObject.SetActive(state);
-        if (MasterUI.freecam != null)
+        mainUI.transform.GetChild(0).gameObject.SetActive(state);
+        if (MainUI.freecam != null)
         {
-            MasterUI.freecam.GetComponentInChildren<CanvasGroup>().alpha = state ? 1 : 0;
+            MainUI.freecam.GetComponentInChildren<CanvasGroup>().alpha = state ? 1 : 0;
         }
     }
 

@@ -26,7 +26,7 @@ namespace DesktopFreecam
 		private void Awake()
 		{
 			lookMode = LookMode.Mouse;
-			joystickSpeed = 150;
+			joystickSpeed = 15;
 			baseMoveSpeed = 2;
 			controlEnabled = false;
             currentRotation = Vector2.zero;
@@ -139,7 +139,7 @@ namespace DesktopFreecam
 			{
 				ResetTransform();
 			}
-			transform.position += deltaMove.normalized * moveSpeed * Time.fixedDeltaTime;
+			transform.position += deltaMove.normalized * moveSpeed * Time.unscaledDeltaTime;
 		}
 
 		private void Look()
@@ -147,13 +147,13 @@ namespace DesktopFreecam
 			// Look
 			if (lookMode == LookMode.Mouse) // Mouse axes don't require deltaTime
 			{
-				currentRotation.x = Mathf.Clamp(currentRotation.x + MeatKitPlugin.mouseSpeed * -Input.GetAxis("Vertical"), -90, 90);
-				currentRotation.y += MeatKitPlugin.mouseSpeed * Input.GetAxis("Horizontal");
+				currentRotation.x = Mathf.Clamp(currentRotation.x + MeatKitPlugin.cfgMouseSpeed.Value/10 * -Input.GetAxis("Vertical"), -90, 90);
+				currentRotation.y += MeatKitPlugin.cfgMouseSpeed.Value/10 * Input.GetAxis("Horizontal");
 			}
 			else if (lookMode == LookMode.Controller) // Controller (needs configuration by SHIFT-starting game)
 			{
-				currentRotation.x = Mathf.Clamp(currentRotation.x + joystickSpeed * Input.GetAxis("RightStickYAxis") * Time.deltaTime, -90, 90);
-				currentRotation.y += joystickSpeed * Input.GetAxis("RightStickXAxis") * Time.deltaTime;
+				currentRotation.x = Mathf.Clamp(currentRotation.x + 10 * joystickSpeed * Input.GetAxis("RightStickYAxis") * Time.deltaTime, -90, 90);
+				currentRotation.y += 10 * joystickSpeed * Input.GetAxis("RightStickXAxis") * Time.deltaTime;
 			}
 			transform.eulerAngles = currentRotation;
 		}
