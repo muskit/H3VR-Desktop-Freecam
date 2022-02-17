@@ -38,7 +38,9 @@ public class MeatKitPlugin : BaseUnityPlugin
     // --- CONFIGURATION --- //
     public static ConfigEntry<bool> cfgMousePitchFlip;
     public static ConfigEntry<bool> cfgMouseYawFlip;
-    public static ConfigEntry<float> cfgMouseSpeed;
+    public static ConfigEntry<float> cfgMouseSensitivity;
+    public static ConfigEntry<float> cfgPipFov;
+    public static ConfigEntry<bool> cfgPipEditWindow;
 
     public static AssetBundle bundle;
     private GameObject mainUI;
@@ -47,22 +49,34 @@ public class MeatKitPlugin : BaseUnityPlugin
     {
         bundle = AssetBundle.LoadFromFile(Path.Combine(BasePath, "msk_desktopfreecam"));
 
-        // CONFIGURATION
+        // --- CONFIGURATION ---
+        // [Mouse]
         cfgMousePitchFlip = Config.Bind(
-            "Controls",
+            "Mouse",
             "Mouse Pitch Flip",
             false,
             "Flip the mouse look direction on the pitch axis.");
         cfgMouseYawFlip = Config.Bind(
-            "Controls",
+            "Mouse",
             "Mouse Yaw Flip",
             false,
             "Flip the mouse look direction on the yaw axis.");
-        cfgMouseSpeed = Config.Bind(
-            "Controls",
+        cfgMouseSensitivity = Config.Bind(
+            "Mouse",
             "Mouse Sensitivity",
             2f,
             "The speed which the camera turns relative to mouse movement.");
+        // [Picture in picture]
+        cfgPipFov = Config.Bind(
+            "Picture in picture",
+            "Field of view",
+            75f,
+            "Field of view on the PIP camera.");
+        cfgPipEditWindow = Config.Bind(
+            "Picture in picture",
+            "Unlock view window",
+            false,
+            "Allow view window to be moved and rescaled.");
 
         Instantiate(bundle.LoadAsset<GameObject>("IntroText"));
 

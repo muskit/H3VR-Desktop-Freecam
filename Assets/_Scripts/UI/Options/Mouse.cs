@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 
 namespace DesktopFreecam
@@ -9,39 +7,27 @@ namespace DesktopFreecam
     {
         public Toggle tglPitchReverse;
         public Toggle tglYawReverse;
-        public Slider sensSlider;
-        public InputField sensEntry;
-
-        // Use this for initialization
-        void Start()
+        public SliderEntryBinder sensitivityBinder;
+        
+        void Awake()
         {
-            sensSlider.onValueChanged.AddListener(OnMouseSpeedSliderChg);
-            sensSlider.value = MeatKitPlugin.cfgMouseSpeed.Value;
-            sensEntry.onEndEdit.AddListener(OnMouseSpeedEntryDoneEditing);
-            sensEntry.text = MeatKitPlugin.cfgMouseSpeed.Value.ToString("F");
+            sensitivityBinder.SetConfigEntry(MeatKitPlugin.cfgMouseSensitivity);
+
+            tglPitchReverse.onValueChanged.AddListener(TogglePitchReverse);
+            tglPitchReverse.isOn = MeatKitPlugin.cfgMousePitchFlip.Value;
+
+            tglYawReverse.onValueChanged.AddListener(ToggleYawReverse);
+            tglYawReverse.isOn = MeatKitPlugin.cfgMouseYawFlip.Value;
         }
 
-        public void OnMouseSpeedSliderChg(float newValue)
+        private void TogglePitchReverse(bool newVal)
         {
-            MeatKitPlugin.cfgMouseSpeed.Value = newValue;
-            sensEntry.text = newValue.ToString("F");
+            MeatKitPlugin.cfgMousePitchFlip.Value = newVal;
         }
 
-        public void OnMouseSpeedEntryDoneEditing(string newText)
+        private void ToggleYawReverse(bool newVal)
         {
-            try
-            {
-                float value = float.Parse(newText);
-                value = Mathf.Clamp(value, sensSlider.minValue, sensSlider.maxValue);
-                MeatKitPlugin.cfgMouseSpeed.Value = value;
-
-                sensEntry.text = value.ToString("F");
-                sensSlider.value = value;
-            }
-            catch
-            {
-                sensEntry.text = sensSlider.value.ToString("F");
-            }
+            MeatKitPlugin.cfgMouseYawFlip.Value = newVal;
         }
     }
 }
