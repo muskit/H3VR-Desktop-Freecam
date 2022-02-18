@@ -22,7 +22,7 @@ public class UIDraggable : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
     public void OnPointerDown(PointerEventData eventData)
     {
         GameObject hitObj = eventData.pointerCurrentRaycast.gameObject;
-        if (grabElements.Contains(hitObj))
+        if (eventData.button == PointerEventData.InputButton.Left && grabElements.Contains(hitObj))
         {
             dragging = true;
             offset = eventData.position - new Vector2(transform.position.x, transform.position.y);

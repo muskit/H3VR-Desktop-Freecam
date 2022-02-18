@@ -7,12 +7,11 @@ namespace DesktopFreecam
 {
 	public class MainUI : MonoBehaviour
 	{
-		// Controllable objects
 		public static GameObject freecam;
 
 		// UI elements
-		private Button uiToggleButton;
-        private Button uiOptionsButton;
+		public Button uiToggleButton;
+        public Button uiOptionsButton;
 
         // extra windows
         private GameObject uiOptionsWindow;
@@ -21,12 +20,9 @@ namespace DesktopFreecam
         private bool uiOptionsEnabled = false;
 
 		// Use this for initialization
-		void Start()
+		void Awake()
 		{
-			uiToggleButton = transform.GetChild(0).GetChild(0).GetComponent<Button>();
 			uiToggleButton.onClick.AddListener(ToggleFreecam);
-
-            uiOptionsButton = transform.GetChild(0).GetChild(1).GetComponent<Button>();
             uiOptionsButton.onClick.AddListener(OpenOptionsUI);
             
 			SetFreecamEnable(false);
@@ -45,7 +41,7 @@ namespace DesktopFreecam
 			else
 			{
 				Destroy(freecam);
-				freecam = null; // unnecessary?
+				//freecam = null; // unnecessary?
 				btnText.text = "Enable Freecam";
 			}
 		}

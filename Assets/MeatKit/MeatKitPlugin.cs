@@ -33,6 +33,9 @@ public class MeatKitPlugin : BaseUnityPlugin
     private static readonly string BasePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 #pragma warning restore 414
 
+    public static AssetBundle bundle;
+    public static GameObject mainUI;
+
     private bool uiIsVisible = false;
 
     // --- CONFIGURATION --- //
@@ -42,8 +45,6 @@ public class MeatKitPlugin : BaseUnityPlugin
     public static ConfigEntry<float> cfgPipFov;
     public static ConfigEntry<bool> cfgPipEditWindow;
 
-    public static AssetBundle bundle;
-    private GameObject mainUI;
 
     private void Awake()
     {
