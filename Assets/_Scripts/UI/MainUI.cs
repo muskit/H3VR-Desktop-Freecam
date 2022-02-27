@@ -23,7 +23,7 @@ namespace DesktopFreecam
 		void Awake()
 		{
 			uiToggleButton.onClick.AddListener(ToggleFreecam);
-            uiOptionsButton.onClick.AddListener(OpenOptionsUI);
+            uiOptionsButton.onClick.AddListener(ToggleOptionsUI);
             
 			SetFreecamEnable(false);
 		}
@@ -51,10 +51,17 @@ namespace DesktopFreecam
 			SetFreecamEnable(!freecamEnabled);
         }
 
-        private void OpenOptionsUI()
+        private void ToggleOptionsUI()
         {
             if (uiOptionsWindow == null)
+            {
                 uiOptionsWindow = Instantiate(MeatKitPlugin.bundle.LoadAsset<GameObject>("Options"));
+                DontDestroyOnLoad(uiOptionsWindow);
+            }
+            else
+            {
+                Destroy(uiOptionsWindow);
+            }
         }
 	}
 }

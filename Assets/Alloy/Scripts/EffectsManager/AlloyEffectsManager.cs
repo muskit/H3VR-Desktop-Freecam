@@ -12,7 +12,7 @@ using UnityEditor;
 
 [ExecuteInEditMode]
 [ImageEffectAllowedInSceneView]
-[RequireComponent(typeof (Camera))]
+[RequireComponent(typeof (UnityEngine.Camera))]
 [AddComponentMenu(AlloyUtils.ComponentMenu + "Effects Manager")]
 public class AlloyEffectsManager : MonoBehaviour {
 
@@ -96,7 +96,7 @@ public class AlloyEffectsManager : MonoBehaviour {
     private Material m_deferredTransmissionBlitMaterial;
     private Material m_deferredBlurredNormalsMaterial;
 
-    private Camera m_camera;
+    private UnityEngine.Camera m_camera;
     private bool m_isTransmissionEnabled;
     private bool m_isScatteringEnabled;
 
@@ -109,7 +109,7 @@ public class AlloyEffectsManager : MonoBehaviour {
 #endif
     
     private void Awake() {
-        m_camera = GetComponent<Camera>();
+        m_camera = GetComponent<UnityEngine.Camera>();
     }
 
     private void Reset() {

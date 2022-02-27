@@ -12,15 +12,24 @@ namespace DesktopFreecam
     //   * FreecamUI manages Freecam objects
 	class Freecam : MonoBehaviour
 	{
-		public float joystickSpeed;
+        //public Rigidbody rigidBody;
+        public CharacterController characterController;
+        public Camera camera;
 		public LookMode lookMode;
-		public float baseMoveSpeed;
+		public float joystickSpeed;
 
-		private bool controlEnabled;
-		private Vector2 currentRotation;
+        private bool controlEnabled = false;
+        private bool physicsEnabled = false;
+
+        private float height;
+        private float moveSpeed;
+        private float verticalVelocity = 0;
+        private float gravitationalAccel = .2f;
+        private Vector3 inputDeltaMove = Vector3.zero;
+		private Vector2 currentRotation = Vector2.zero;
 
 		private GameObject vrCamera;
-        private GameObject pipCamera;
+        private GameObject povCamera;
 
 		// UI
 		private Toggle uiHideFromPlayerToggle;
@@ -34,11 +43,10 @@ namespace DesktopFreecam
 
 		private void Awake()
 		{
+            characterController.gameObject.layer = LayerMask.NameToLayer("ExternalCamOnly");
+            height = characterController.height;
 			lookMode = LookMode.Mouse;
 			joystickSpeed = 15;
-			baseMoveSpeed = 2;
-			controlEnabled = false;
-            currentRotation = Vector2.zero;
             SceneManager.activeSceneChanged += OnSceneChanged;
 		}
         
@@ -66,53 +74,102 @@ namespace DesktopFreecam
             vrCamera = GameObject.FindWithTag("MainCamera");
         }
 
-        private void Move()
+        private void UpdateInputMovement()
         {
-            float moveSpeed;
-            Vector3 deltaMove = Vector3.zero;
-
             // Speed modifier
-            if (Input.GetKey("left ctrl"))
+            if (Input.GetKey(MeatKitPlugin.cfgKeyboard[KBControls.SlowDown].Value))
             {
-                moveSpeed = .45f * baseMoveSpeed;
+                moveSpeed = MeatKitPlugin.cfgCameraFlySlowMult.Value * MeatKitPlugin.cfgCameraFlySpeed.Value;
             }
-            else if (Input.GetKey("left shift"))
+            else if (Input.GetKey(MeatKitPlugin.cfgKeyboard[KBControls.SpeedUp].Value))
             {
-                moveSpeed = 6 * baseMoveSpeed;
+                moveSpeed = MeatKitPlugin.cfgCameraFlyFastMult.Value * MeatKitPlugin.cfgCameraFlySpeed.Value;
             }
             else
-                moveSpeed = baseMoveSpeed;
+                moveSpeed = MeatKitPlugin.cfgCameraFlySpeed.Value;
 
-            // Move
-            if (Input.GetKey("w"))
+            // Movement
+            inputDeltaMove = Vector3.zero;
+            if (Input.GetKey(MeatKitPlugin.cfgKeyboard[KBControls.MoveForward].Value))
             {
-                deltaMove += transform.forward;
+                inputDeltaMove += camera.transform.forward;
             }
-            if (Input.GetKey("s"))
+            if (Input.GetKey(MeatKitPlugin.cfgKeyboard[KBControls.MoveBackward].Value))
             {
-                deltaMove -= transform.forward;
+                inputDeltaMove -= camera.transform.forward;
             }
-            if (Input.GetKey("a"))
+            if (Input.GetKey(MeatKitPlugin.cfgKeyboard[KBControls.MoveLeft].Value))
             {
-                deltaMove -= transform.right;
+                inputDeltaMove -= camera.transform.right;
             }
-            if (Input.GetKey("d"))
+            if (Input.GetKey(MeatKitPlugin.cfgKeyboard[KBControls.MoveRight].Value))
             {
-                deltaMove += transform.right;
+                inputDeltaMove += camera.transform.right;
             }
-            if (Input.GetKey("e"))
+            if (Input.GetKey(MeatKitPlugin.cfgKeyboard[KBControls.Ascend].Value))
             {
-                deltaMove += transform.up;
+                inputDeltaMove += Vector3.up;
             }
-            if (Input.GetKey("q"))
+            if (Input.GetKey(MeatKitPlugin.cfgKeyboard[KBControls.Descend].Value))
             {
-                deltaMove -= transform.up;
+                inputDeltaMove -= Vector3.up;
             }
-            if (Input.GetKey("r"))
+            inputDeltaMove.Normalize();
+        }
+
+        private void MoveNoclip()
+        {
+            characterController.transform.position += inputDeltaMove * moveSpeed * Time.unscaledDeltaTime;
+        }
+
+        private void UpdatePhysics()
+        {
+            // Crouch
+            if (Input.GetKeyDown(MeatKitPlugin.cfgKeyboard[KBControls.Descend].Value))
             {
-                GoToPlayer();
+                characterController.height = height / 2;
+
+                var pos = characterController.transform.position;
+                pos.y -= height / 2;
+                characterController.transform.position = pos;
             }
-            transform.position += deltaMove.normalized * moveSpeed * Time.unscaledDeltaTime;
+            if (Input.GetKey(MeatKitPlugin.cfgKeyboard[KBControls.Descend].Value))
+            {
+                moveSpeed *= MeatKitPlugin.cfgCameraFlySlowMult.Value;
+            }
+
+            // Un-crouch
+            if (Input.GetKeyUp(MeatKitPlugin.cfgKeyboard[KBControls.Descend].Value))
+            {
+                characterController.height = height;
+
+                var pos = characterController.transform.position;
+                pos.y += height / 2;
+                characterController.transform.position = pos;
+            }
+
+            camera.transform.localPosition = new Vector3(0, characterController.height/2, 0);
+
+            // Jump
+            if (Input.GetKey(MeatKitPlugin.cfgKeyboard[KBControls.Ascend].Value) && characterController.isGrounded)
+                verticalVelocity += 3;
+
+            // Gravity
+            if (characterController.isGrounded)
+            {
+                verticalVelocity = 0;
+            }
+            else
+            {
+                verticalVelocity -= gravitationalAccel;
+            }
+
+            // Movement
+            Vector3 moveDelta = inputDeltaMove;
+            moveDelta.y = 0;
+            moveDelta.Normalize();
+
+            characterController.Move( (moveSpeed*moveDelta + new Vector3(0, verticalVelocity)) * Time.fixedDeltaTime );
         }
 
         private void Look()
@@ -123,7 +180,7 @@ namespace DesktopFreecam
 
             if (lookMode == LookMode.Mouse) // Mouse axes don't require deltaTime
             {
-                currentRotation.x = Mathf.Clamp(currentRotation.x + MeatKitPlugin.cfgMouseSensitivity.Value / 10 * mouseY, -90, 90);
+                currentRotation.x = Mathf.Clamp(currentRotation.x + MeatKitPlugin.cfgMouseSensitivity.Value / 10 * mouseY, -89.99f, 89.99f);
                 currentRotation.y += MeatKitPlugin.cfgMouseSensitivity.Value / 10 * mouseX;
             }
             else if (lookMode == LookMode.Controller) // Controller (needs configuration by SHIFT-starting game)
@@ -131,14 +188,34 @@ namespace DesktopFreecam
                 currentRotation.x = Mathf.Clamp(currentRotation.x + 10 * joystickSpeed * Input.GetAxis("RightStickYAxis") * Time.deltaTime, -90, 90);
                 currentRotation.y += 10 * joystickSpeed * Input.GetAxis("RightStickXAxis") * Time.deltaTime;
             }
-            transform.eulerAngles = currentRotation;
+            camera.transform.eulerAngles = currentRotation;
+        }
+
+        private void ScrollWheel()
+        {
+            if (Mathf.Abs(Input.mouseScrollDelta.y) > 0.05f)
+            {
+                switch (MeatKitPlugin.cfgScrollMode.Value)
+                {
+                    case ScrollWheelMode.MoveSpeed:
+                        float newVal = MeatKitPlugin.cfgCameraFlySpeed.Value + 0.6f * Input.mouseScrollDelta.y;
+                        if (newVal > 0)
+                            MeatKitPlugin.cfgCameraFlySpeed.Value = newVal;
+                        break;
+                    case ScrollWheelMode.FieldOfView:
+                        newVal = MeatKitPlugin.cfgCameraFov.Value + 2 * Input.mouseScrollDelta.y;
+                        if (5 < newVal && newVal < 179.99)
+                            MeatKitPlugin.cfgCameraFov.Value = newVal;
+                        break;
+                }
+            }   
         }
 
         // Set position to player's head
         public void GoToPlayer()
         {
             //var vrCamera = Camera.main;
-            transform.position = vrCamera.transform.position - vrCamera.transform.forward;
+            characterController.transform.position = vrCamera.transform.position - vrCamera.transform.forward;
             currentRotation = vrCamera.transform.forward;
         }
         public void DelayedGoToPlayer()
@@ -160,41 +237,65 @@ namespace DesktopFreecam
             }
         }
 
-        public void SetPIP(bool doPIP)
+        public void SetPIP(bool pipEnabled)
         {
-            if (doPIP)
+            if (pipEnabled)
             {
-                pipCamera = Instantiate(MeatKitPlugin.bundle.LoadAsset<GameObject>("PIPCamera"));
-                DontDestroyOnLoad(pipCamera);
+                povCamera = Instantiate(MeatKitPlugin.bundle.LoadAsset<GameObject>("POVCamera"));
+                DontDestroyOnLoad(povCamera);
             }
             else
             {
-                Destroy(pipCamera);
+                Destroy(povCamera);
             }
         }
 
         private void Update()
 		{
-			// Mouse lock, controls toggle
-			if (Input.GetKeyDown("left alt") || Input.GetKeyDown("right alt"))
+            camera.fieldOfView = MeatKitPlugin.cfgCameraFov.Value;
+
+            if (Input.GetKeyDown(KeyCode.F))
+                physicsEnabled = !physicsEnabled;
+
+            // controls toggle
+            if (Input.GetKeyDown(MeatKitPlugin.cfgKeyboard[KBControls.ToggleControls].Value))
 				controlEnabled = !controlEnabled;
+
+            // Input & movement
 			if (controlEnabled)
 			{
 				Cursor.lockState = CursorLockMode.Locked;
-			}
+                UpdateInputMovement();
+                if (Input.GetKey(MeatKitPlugin.cfgKeyboard[KBControls.TeleportToPlayer].Value))
+                {
+                    GoToPlayer();
+                }
+                if (!physicsEnabled)
+                    MoveNoclip();
+
+                Look();
+                ScrollWheel();
+            }
 			else
 			{
 				Cursor.lockState = CursorLockMode.None;
 			}
-
-			if (controlEnabled)
-				Look();
 		}
-
         private void FixedUpdate()
         {
-            if (controlEnabled)
-                Move();
+            if (physicsEnabled)
+            {
+                UpdatePhysics();
+            }
+            else
+            {
+                verticalVelocity = 0;
+            }
+        }
+
+        private void OnDestroy()
+        {
+            Destroy(povCamera);
         }
     }
 }

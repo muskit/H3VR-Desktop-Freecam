@@ -1,12 +1,13 @@
 ﻿#if H3VR_IMPORTED
 using System.IO;
 using System.Reflection;
+using System.Collections.Generic;
 using BepInEx;
 using BepInEx.Configuration;
-using FistVR;
-using Sodalite.Api;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+
+using FistVR;
 using DesktopFreecam;
 
 /*
@@ -35,16 +36,40 @@ public class MeatKitPlugin : BaseUnityPlugin
 
     public static AssetBundle bundle;
     public static GameObject mainUI;
+    public static FVRSceneSettings sceneSettings;
 
     private bool uiIsVisible = false;
 
     // --- CONFIGURATION --- //
+    // Mouse
     public static ConfigEntry<bool> cfgMousePitchFlip;
     public static ConfigEntry<bool> cfgMouseYawFlip;
     public static ConfigEntry<float> cfgMouseSensitivity;
+    public static ConfigEntry<ScrollWheelMode> cfgScrollMode;
+    // Camera
+    public static ConfigEntry<float> cfgCameraFov;
+    public static ConfigEntry<float> cfgCameraFlySpeed;
+    public static ConfigEntry<float> cfgCameraFlyFastMult;
+    public static ConfigEntry<float> cfgCameraFlySlowMult;
+    // Picture in picture
     public static ConfigEntry<float> cfgPipFov;
     public static ConfigEntry<bool> cfgPipEditWindow;
-
+    public static ConfigEntry<float> cfgPipWindowOpacity;
+    public static ConfigEntry<int> cfgPipResX;
+    public static ConfigEntry<int> cfgPipResY;
+    // Keyboard
+    public static Dictionary<KBControls, ConfigEntry<KeyCode>> cfgKeyboard;
+    //public static ConfigEntry<KeyCode> cfgKbForward;
+    //public static ConfigEntry<KeyCode> cfgKbBackward;
+    //public static ConfigEntry<KeyCode> cfgKbLeft;
+    //public static ConfigEntry<KeyCode> cfgKbRight;
+    //public static ConfigEntry<KeyCode> cfgKbAscend;
+    //public static ConfigEntry<KeyCode> cfgKbDescend;
+    //public static ConfigEntry<KeyCode> cfgKbSpeedUp;
+    //public static ConfigEntry<KeyCode> cfgKbSlowDn;
+    //public static ConfigEntry<KeyCode> cfgKbToggleControls;
+    //public static ConfigEntry<KeyCode> cfgKbToggleUI;
+    // Test: pair of ints config
 
     private void Awake()
     {
@@ -67,6 +92,32 @@ public class MeatKitPlugin : BaseUnityPlugin
             "Mouse Sensitivity",
             2f,
             "The speed which the camera turns relative to mouse movement.");
+        cfgScrollMode = Config.Bind(
+            "Mouse",
+            "Scroll wheel mode",
+            ScrollWheelMode.MoveSpeed,
+            "What the scroll wheel does while in control.");
+        // [Camera]
+        cfgCameraFov = Config.Bind(
+            "Camera",
+            "Field of view",
+            75f,
+            "Field of view on the free-flying camera.");
+        cfgCameraFlySpeed = Config.Bind(
+            "Camera",
+            "Fly speed",
+            4f,
+            "Base movement speed in meters per second..");
+        cfgCameraFlyFastMult = Config.Bind(
+            "Camera",
+            "Fast flying multplier",
+            2.2f,
+            "Multiplier for the camera speed when the \"Speed up\" button is held.");
+        cfgCameraFlySlowMult = Config.Bind(
+            "Camera",
+            "Slow flying multplier",
+            .45f,
+            "Multiplier for the camera speed when the \"Slow down\" button is held.");
         // [Picture in picture]
         cfgPipFov = Config.Bind(
             "Picture in picture",
@@ -78,8 +129,68 @@ public class MeatKitPlugin : BaseUnityPlugin
             "Unlock view window",
             false,
             "Allow view window to be moved and rescaled.");
+        cfgPipWindowOpacity = Config.Bind(
+            "Picture in picture",
+            "Window opacity",
+            1f,
+            "Set opacity of the PIP window.");
+        cfgPipResX = Config.Bind(
+            "Picture in picture",
+            "Window resolution (x)",
+            640);
+        cfgPipResY = Config.Bind(
+            "Picture in picture",
+            "Window resolution (Y)",
+            400);
+        // [Keyboard] (oh boy)
+        cfgKeyboard = new Dictionary<KBControls, ConfigEntry<KeyCode>>
+            (System.Enum.GetNames(typeof(KBControls)).Length);
+        cfgKeyboard[KBControls.MoveForward] = Config.Bind(
+            "Keyboard",
+            "Move forward",
+            KeyCode.W);
+        cfgKeyboard[KBControls.MoveBackward] = Config.Bind(
+            "Keyboard",
+            "Move backward",
+            KeyCode.S);
+        cfgKeyboard[KBControls.MoveLeft] = Config.Bind(
+            "Keyboard",
+            "Move left",
+            KeyCode.A);
+        cfgKeyboard[KBControls.MoveRight] = Config.Bind(
+            "Keyboard",
+            "Move right",
+            KeyCode.D);
+        cfgKeyboard[KBControls.Ascend] = Config.Bind(
+            "Keyboard",
+            "Ascend",
+            KeyCode.Space);
+        cfgKeyboard[KBControls.Descend] = Config.Bind(
+            "Keyboard",
+            "Descend",
+            KeyCode.LeftControl);
+        cfgKeyboard[KBControls.SpeedUp] = Config.Bind(
+            "Keyboard",
+            "Speed up",
+            KeyCode.LeftShift);
+        cfgKeyboard[KBControls.SlowDown] = Config.Bind(
+            "Keyboard",
+            "Slow down",
+            KeyCode.LeftAlt);
+        cfgKeyboard[KBControls.TeleportToPlayer] = Config.Bind(
+            "Keyboard",
+            "Teleport to player",
+            KeyCode.R);
+        cfgKeyboard[KBControls.ToggleControls] = Config.Bind(
+            "Keyboard",
+            "Toggle controls",
+            KeyCode.Tab);
+        cfgKeyboard[KBControls.ToggleUI] = Config.Bind(
+            "Keyboard",
+            "Toggle UI",
+            KeyCode.F3);
 
-        Instantiate(bundle.LoadAsset<GameObject>("IntroText"));
+        SceneManager.activeSceneChanged += OnSceneChange;
 
         LoadAssets(); // DO NOT REMOVE
     }
@@ -89,6 +200,15 @@ public class MeatKitPlugin : BaseUnityPlugin
         mainUI = Instantiate(bundle.LoadAsset<GameObject>("MainUI"));
         DontDestroyOnLoad(mainUI);
         SetUIVisibility(uiIsVisible);
+
+        var transIntro = Instantiate(bundle.LoadAsset<GameObject>("IntroText")).transform;
+        transIntro.SetParent(GameObject.FindGameObjectWithTag("MainCamera").transform);
+        transIntro.position = new Vector3(999, 999, 999);
+    }
+
+    private void OnSceneChange(Scene from, Scene to)
+    {
+        sceneSettings = FindObjectOfType<FVRSceneSettings>();
     }
     
     private void SetUIVisibility(bool state)
@@ -102,7 +222,7 @@ public class MeatKitPlugin : BaseUnityPlugin
 
     private void Update()
     {
-        if(Input.GetKeyDown(KeyCode.F3))
+        if(Input.GetKeyDown(cfgKeyboard[KBControls.ToggleUI].Value))
         {
             uiIsVisible = !uiIsVisible;
             SetUIVisibility(uiIsVisible);

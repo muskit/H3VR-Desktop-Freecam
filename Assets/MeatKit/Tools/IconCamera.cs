@@ -41,13 +41,13 @@ public class IconCamera : MonoBehaviour
         {
             if (!_camera)
             {
-                _camera = this.gameObject.GetComponent<Camera>();
+                _camera = this.gameObject.GetComponent<UnityEngine.Camera>();
             }
 
             return _camera;
         }
     }
-    private Camera _camera;
+    private UnityEngine.Camera _camera;
  
 
     private void Update()
