@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public static class PhysUtils
+public static class PhysUtil
 {
     public static float GetRequiredVelocityChange(float aFinalSpeed, float aDrag)
     {

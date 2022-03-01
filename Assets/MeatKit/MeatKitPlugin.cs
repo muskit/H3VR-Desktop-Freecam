@@ -73,6 +73,7 @@ public class MeatKitPlugin : BaseUnityPlugin
 
     private void Awake()
     {
+        Logger.LogInfo("BasePath: " + BasePath);
         bundle = AssetBundle.LoadFromFile(Path.Combine(BasePath, "msk_desktopfreecam"));
 
         // --- CONFIGURATION ---

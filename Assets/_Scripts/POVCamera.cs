@@ -59,13 +59,6 @@ namespace DesktopFreecam
         private void Start()
         {
             InitializePIP();
-            var specPanel = FindObjectOfType<SpectatorPanel>();
-            if (specPanel != null)
-            {
-                specPanel.BTN_SetCamMode((int)ControlOptions.DesktopCameraMode.HDSpectator);
-            }
-            else
-                GM.Options.ControlOptions.CamMode = ControlOptions.DesktopCameraMode.HDSpectator;
         }
 
         private void OnSceneChanged(Scene from, Scene to)
@@ -75,13 +68,7 @@ namespace DesktopFreecam
 
         private void InitializePIP()
         {
-            var specPanel = FindObjectOfType<SpectatorPanel>();
-            if (specPanel != null)
-            {
-                specPanel.BTN_SetCamMode((int)ControlOptions.DesktopCameraMode.HDSpectator);
-            }
-            else
-                GM.Options.ControlOptions.CamMode = ControlOptions.DesktopCameraMode.HDSpectator;
+            Util.SetDesktopMode(ControlOptions.DesktopCameraMode.HDSpectator);
         }
         #endregion
 
@@ -99,13 +86,17 @@ namespace DesktopFreecam
         {
             if (rt != null)
                 rt.Release();
+
+            // Destroy() is delayed. Destroy(rt) would destroy our newly
+            // created RT. We set the old one to another variable and
+            // destroy that instead.
             var a = rt;
             Destroy(a);
 
             rt = new RenderTexture((width > 0 ? width : MeatKitPlugin.cfgPipResX.Value),
                 (height > 0 ? height : MeatKitPlugin.cfgPipResY.Value), 16, RenderTextureFormat.Default);
             specCamera.targetTexture = rt;
-            uiRawImage.texture = rt; // FIXME: causing exception
+            uiRawImage.texture = rt;
 
             if (specCamera != null)
                 uiRawImage.texture = rt;
@@ -115,7 +106,7 @@ namespace DesktopFreecam
             uiRawImage.rectTransform.sizeDelta = new Vector2(uiRawImage.texture.width, uiRawImage.texture.height);
         }
 
-        private void SetSpecCamera()
+        private void GetSpecCamera()
         {
             // TODO: use FistVR/game manager function?
             var foundObj = GameObject.Find("[SpectatorCamera](Clone)");
@@ -136,7 +127,7 @@ namespace DesktopFreecam
             // INITIALIZATION
             if (specCamera == null && GM.Options.ControlOptions.CamMode != ControlOptions.DesktopCameraMode.Default)
             {
-                SetSpecCamera();
+                GetSpecCamera();
                 SetResolution(MeatKitPlugin.cfgPipResX.Value, MeatKitPlugin.cfgPipResY.Value);
             }
 
@@ -149,13 +140,7 @@ namespace DesktopFreecam
 
         private void OnDestroy()
         {
-            var specPanel = FindObjectOfType<SpectatorPanel>();
-            if (specPanel != null)
-            {
-                specPanel.BTN_SetCamMode((int)ControlOptions.DesktopCameraMode.Default);
-            }
-            else
-                GM.Options.ControlOptions.CamMode = ControlOptions.DesktopCameraMode.Default;
+            Util.SetDesktopMode(ControlOptions.DesktopCameraMode.Default);
             rt.Release();
         }
     }

@@ -20,7 +20,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4444519365214638}
   - component: {fileID: 143744603907824748}
-  m_Layer: 0
+  m_Layer: 28
   m_Name: CapsulePhysics
   m_TagString: Untagged
   m_Icon: {fileID: 0}

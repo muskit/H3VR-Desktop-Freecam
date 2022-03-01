@@ -13,13 +13,27 @@ namespace DesktopFreecam
 
         public GameObject panel;
         public IntEvent onTabClick = new IntEvent();
+        public bool invertTextColorOnActive;
 
-        private static readonly Color colorActivated = new Color32(0x5C, 0x5C, 0x5C, 0xFF);
-        private static readonly Color colorDeactivated = new Color32(0x8B, 0x8D, 0x8E, 0xFF);
+        private Text btnText;
+        private Color normalTextColor;
 
-        public void Start()
+        //private static readonly Color colorActivated = new Color32(0x5C, 0x5C, 0x5C, 0xFF);
+        //private static readonly Color colorDeactivated = new Color32(0x8B, 0x8D, 0x8E, 0xFF);
+
+        public Color colorActivated;
+        public Color colorDeactivated;
+
+        public void Awake()
         {
-            gameObject.GetComponent<Button>().onClick.AddListener(OnClick);
+            var btn = GetComponent<Button>();
+            btnText = btn.transform.GetChild(0).GetComponent<Text>();
+
+            btn.onClick.AddListener(OnClick);
+            normalTextColor = btnText.color;
+
+            colorActivated.a = GetComponent<Image>().color.a;
+            colorDeactivated.a = GetComponent<Image>().color.a;
         }
 
         public void SetState(bool val)
@@ -27,10 +41,14 @@ namespace DesktopFreecam
             if (val)
             {
                 GetComponent<Image>().color = colorActivated;
+                if (invertTextColorOnActive)
+                    btnText.color = Util.InvertColor(normalTextColor);
             }
             else
             {
                 GetComponent<Image>().color = colorDeactivated;
+                if (invertTextColorOnActive)
+                    btnText.color = normalTextColor;
             }
             panel.SetActive(val);
         }

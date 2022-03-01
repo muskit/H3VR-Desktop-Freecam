@@ -55,7 +55,7 @@ namespace DesktopFreecam
         {
             if (uiOptionsWindow == null)
             {
-                uiOptionsWindow = Instantiate(MeatKitPlugin.bundle.LoadAsset<GameObject>("Options"));
+                uiOptionsWindow = Instantiate(MeatKitPlugin.bundle.LoadAsset<GameObject>("Options"), transform);
                 DontDestroyOnLoad(uiOptionsWindow);
             }
             else

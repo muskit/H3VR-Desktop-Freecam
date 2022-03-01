@@ -4236,6 +4236,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   panel: {fileID: 1540911330957008}
+  colorActivated: {r: 0.36078432, g: 0.36078432, b: 0.36078432, a: 1}
+  colorDeactivated: {r: 0.54509807, g: 0.5529412, b: 0.5568628, a: 1}
 --- !u!114 &114026677054629476
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -8938,6 +8940,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   panel: {fileID: 1833820885687150}
+  colorActivated: {r: 0.36078432, g: 0.36078432, b: 0.36078432, a: 1}
+  colorDeactivated: {r: 0.54509807, g: 0.5529412, b: 0.5568628, a: 1}
 --- !u!114 &114567123204092556
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -10297,6 +10301,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   panel: {fileID: 1199633603102150}
+  colorActivated: {r: 0.36078432, g: 0.36078432, b: 0.36078432, a: 1}
+  colorDeactivated: {r: 0.54509807, g: 0.5529412, b: 0.5568628, a: 1}
 --- !u!114 &114724442549161494
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -10767,6 +10773,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   panel: {fileID: 1831681018248474}
+  colorActivated: {r: 0.36078432, g: 0.36078432, b: 0.36078432, a: 1}
+  colorDeactivated: {r: 0.54509807, g: 0.5529412, b: 0.5568628, a: 1}
 --- !u!114 &114757591977747876
 MonoBehaviour:
   m_ObjectHideFlags: 1

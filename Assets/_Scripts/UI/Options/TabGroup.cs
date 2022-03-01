@@ -17,9 +17,12 @@ namespace DesktopFreecam
             foreach (Transform child in transform)
             {
                 var curTab = child.GetComponent<TabButton>();
-                tabButtons.Add(curTab);
-                curTab.onTabClick.AddListener(OnTabClick);
-                curTab.SetState(false);
+                if (curTab != null)
+                {
+                    tabButtons.Add(curTab);
+                    curTab.onTabClick.AddListener(OnTabClick);
+                    curTab.SetState(false);
+                }
             }
 
             if (tabButtons.Count > 0)
