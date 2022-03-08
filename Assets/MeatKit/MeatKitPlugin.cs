@@ -1,4 +1,5 @@
 ﻿#if H3VR_IMPORTED
+using HarmonyLib;
 using System.IO;
 using System.Reflection;
 using System.Collections.Generic;
@@ -40,36 +41,10 @@ public class MeatKitPlugin : BaseUnityPlugin
 
     private bool uiIsVisible = false;
 
-    // --- CONFIGURATION --- //
-    // Mouse
-    public static ConfigEntry<bool> cfgMousePitchFlip;
-    public static ConfigEntry<bool> cfgMouseYawFlip;
-    public static ConfigEntry<float> cfgMouseSensitivity;
-    public static ConfigEntry<ScrollWheelMode> cfgScrollMode;
-    // Camera
-    public static ConfigEntry<float> cfgCameraFov;
-    public static ConfigEntry<float> cfgCameraFlySpeed;
-    public static ConfigEntry<float> cfgCameraFlyFastMult;
-    public static ConfigEntry<float> cfgCameraFlySlowMult;
-    // Picture in picture
-    public static ConfigEntry<float> cfgPipFov;
-    public static ConfigEntry<bool> cfgPipEditWindow;
-    public static ConfigEntry<float> cfgPipWindowOpacity;
-    public static ConfigEntry<int> cfgPipResX;
-    public static ConfigEntry<int> cfgPipResY;
-    // Keyboard
-    public static Dictionary<KBControls, ConfigEntry<KeyCode>> cfgKeyboard;
-    //public static ConfigEntry<KeyCode> cfgKbForward;
-    //public static ConfigEntry<KeyCode> cfgKbBackward;
-    //public static ConfigEntry<KeyCode> cfgKbLeft;
-    //public static ConfigEntry<KeyCode> cfgKbRight;
-    //public static ConfigEntry<KeyCode> cfgKbAscend;
-    //public static ConfigEntry<KeyCode> cfgKbDescend;
-    //public static ConfigEntry<KeyCode> cfgKbSpeedUp;
-    //public static ConfigEntry<KeyCode> cfgKbSlowDn;
-    //public static ConfigEntry<KeyCode> cfgKbToggleControls;
-    //public static ConfigEntry<KeyCode> cfgKbToggleUI;
-    // Test: pair of ints config
+    public MeatKitPlugin() : base()
+    {
+        new Harmony("muskit.DesktopFreecam").PatchAll();
+    }
 
     private void Awake()
     {
@@ -78,115 +53,109 @@ public class MeatKitPlugin : BaseUnityPlugin
 
         // --- CONFIGURATION ---
         // [Mouse]
-        cfgMousePitchFlip = Config.Bind(
+        Settings.cfgMousePitchFlip = Config.Bind(
             "Mouse",
             "Mouse Pitch Flip",
             false,
             "Flip the mouse look direction on the pitch axis.");
-        cfgMouseYawFlip = Config.Bind(
+        Settings.cfgMouseYawFlip = Config.Bind(
             "Mouse",
             "Mouse Yaw Flip",
             false,
             "Flip the mouse look direction on the yaw axis.");
-        cfgMouseSensitivity = Config.Bind(
+        Settings.cfgMouseSensitivity = Config.Bind(
             "Mouse",
             "Mouse Sensitivity",
             2f,
             "The speed which the camera turns relative to mouse movement.");
-        cfgScrollMode = Config.Bind(
+        Settings.cfgScrollMode = Config.Bind(
             "Mouse",
             "Scroll wheel mode",
             ScrollWheelMode.MoveSpeed,
             "What the scroll wheel does while in control.");
         // [Camera]
-        cfgCameraFov = Config.Bind(
+        Settings.cfgCameraFov = Config.Bind(
             "Camera",
             "Field of view",
             75f,
             "Field of view on the free-flying camera.");
-        cfgCameraFlySpeed = Config.Bind(
+        Settings.cfgCameraFlySpeed = Config.Bind(
             "Camera",
             "Fly speed",
             4f,
             "Base movement speed in meters per second..");
-        cfgCameraFlyFastMult = Config.Bind(
+        Settings.cfgCameraFlyFastMult = Config.Bind(
             "Camera",
             "Fast flying multplier",
             2.2f,
             "Multiplier for the camera speed when the \"Speed up\" button is held.");
-        cfgCameraFlySlowMult = Config.Bind(
+        Settings.cfgCameraFlySlowMult = Config.Bind(
             "Camera",
             "Slow flying multplier",
             .45f,
             "Multiplier for the camera speed when the \"Slow down\" button is held.");
         // [Picture in picture]
-        cfgPipFov = Config.Bind(
-            "Picture in picture",
-            "Field of view",
-            75f,
-            "Field of view on the PIP camera.");
-        cfgPipEditWindow = Config.Bind(
-            "Picture in picture",
-            "Unlock view window",
-            false,
-            "Allow view window to be moved and rescaled.");
-        cfgPipWindowOpacity = Config.Bind(
+        Settings.cfgPipOpacity = Config.Bind(
             "Picture in picture",
             "Window opacity",
             1f,
             "Set opacity of the PIP window.");
-        cfgPipResX = Config.Bind(
+        Settings.cfgPipResX = Config.Bind(
             "Picture in picture",
             "Window resolution (x)",
             640);
-        cfgPipResY = Config.Bind(
+        Settings.cfgPipResY = Config.Bind(
             "Picture in picture",
             "Window resolution (Y)",
             400);
+        Settings.cfgPipUnlocked = Config.Bind(
+           "Picture in picture",
+           "Window is draggable",
+           true);
         // [Keyboard] (oh boy)
-        cfgKeyboard = new Dictionary<KBControls, ConfigEntry<KeyCode>>
+        Settings.cfgKeyboard = new Dictionary<KBControls, ConfigEntry<KeyCode>>
             (System.Enum.GetNames(typeof(KBControls)).Length);
-        cfgKeyboard[KBControls.MoveForward] = Config.Bind(
+        Settings.cfgKeyboard[KBControls.MoveForward] = Config.Bind(
             "Keyboard",
             "Move forward",
             KeyCode.W);
-        cfgKeyboard[KBControls.MoveBackward] = Config.Bind(
+        Settings.cfgKeyboard[KBControls.MoveBackward] = Config.Bind(
             "Keyboard",
             "Move backward",
             KeyCode.S);
-        cfgKeyboard[KBControls.MoveLeft] = Config.Bind(
+        Settings.cfgKeyboard[KBControls.MoveLeft] = Config.Bind(
             "Keyboard",
             "Move left",
             KeyCode.A);
-        cfgKeyboard[KBControls.MoveRight] = Config.Bind(
+        Settings.cfgKeyboard[KBControls.MoveRight] = Config.Bind(
             "Keyboard",
             "Move right",
             KeyCode.D);
-        cfgKeyboard[KBControls.Ascend] = Config.Bind(
+        Settings.cfgKeyboard[KBControls.Ascend] = Config.Bind(
             "Keyboard",
             "Ascend",
             KeyCode.Space);
-        cfgKeyboard[KBControls.Descend] = Config.Bind(
+        Settings.cfgKeyboard[KBControls.Descend] = Config.Bind(
             "Keyboard",
             "Descend",
             KeyCode.LeftControl);
-        cfgKeyboard[KBControls.SpeedUp] = Config.Bind(
+        Settings.cfgKeyboard[KBControls.SpeedUp] = Config.Bind(
             "Keyboard",
             "Speed up",
             KeyCode.LeftShift);
-        cfgKeyboard[KBControls.SlowDown] = Config.Bind(
+        Settings.cfgKeyboard[KBControls.SlowDown] = Config.Bind(
             "Keyboard",
             "Slow down",
             KeyCode.LeftAlt);
-        cfgKeyboard[KBControls.TeleportToPlayer] = Config.Bind(
+        Settings.cfgKeyboard[KBControls.TeleportToPlayer] = Config.Bind(
             "Keyboard",
             "Teleport to player",
             KeyCode.R);
-        cfgKeyboard[KBControls.ToggleControls] = Config.Bind(
+        Settings.cfgKeyboard[KBControls.ToggleControls] = Config.Bind(
             "Keyboard",
             "Toggle controls",
             KeyCode.Tab);
-        cfgKeyboard[KBControls.ToggleUI] = Config.Bind(
+        Settings.cfgKeyboard[KBControls.ToggleUI] = Config.Bind(
             "Keyboard",
             "Toggle UI",
             KeyCode.F3);
@@ -215,15 +184,11 @@ public class MeatKitPlugin : BaseUnityPlugin
     private void SetUIVisibility(bool state)
     {
         mainUI.transform.GetChild(0).gameObject.SetActive(state);
-        if (MainUI.freecam != null)
-        {
-            MainUI.freecam.GetComponentInChildren<CanvasGroup>().alpha = state ? 1 : 0;
-        }
     }
 
     private void Update()
     {
-        if(Input.GetKeyDown(cfgKeyboard[KBControls.ToggleUI].Value))
+        if(Input.GetKeyDown(Settings.cfgKeyboard[KBControls.ToggleUI].Value))
         {
             uiIsVisible = !uiIsVisible;
             SetUIVisibility(uiIsVisible);

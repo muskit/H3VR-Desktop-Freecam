@@ -7,6 +7,8 @@ namespace DesktopFreecam
     // Attached to the parent of one or more TabButtons
     public class TabGroup : MonoBehaviour
     {
+        public Color colorActivated;
+        public Color colorDeactivated;
 
         private List<TabButton> tabButtons = new List<TabButton>();
         private int currentTabIdx = -1;

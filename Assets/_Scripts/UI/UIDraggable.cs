@@ -3,10 +3,11 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-// For use only with the Options panel for now
 public class UIDraggable : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 {
     public List<GameObject> grabElements;
+    public bool lockX = false;
+    public bool lockY = false;
 
     private bool dragging;
     private Vector2 offset;
@@ -15,13 +16,16 @@ public class UIDraggable : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
     {
         if (dragging)
         {
-            transform.position = new Vector2(Input.mousePosition.x, Input.mousePosition.y) - offset;
+            float newX = lockX ? transform.position.x : Input.mousePosition.x - offset.x;
+            float newY = lockY ? transform.position.y : Input.mousePosition.y - offset.y;
+            transform.position = new Vector2(newX, newY);
         }
     }
 
     public void OnPointerDown(PointerEventData eventData)
     {
         GameObject hitObj = eventData.pointerCurrentRaycast.gameObject;
+        Debug.Log(hitObj);
         if (eventData.button == PointerEventData.InputButton.Left && grabElements.Contains(hitObj))
         {
             dragging = true;

@@ -21,8 +21,8 @@ namespace DesktopFreecam
         //private static readonly Color colorActivated = new Color32(0x5C, 0x5C, 0x5C, 0xFF);
         //private static readonly Color colorDeactivated = new Color32(0x8B, 0x8D, 0x8E, 0xFF);
 
-        public Color colorActivated;
-        public Color colorDeactivated;
+        public Color colorActivated = Color.black;
+        public Color colorDeactivated = Color.black;
 
         public void Awake()
         {
@@ -50,7 +50,10 @@ namespace DesktopFreecam
                 if (invertTextColorOnActive)
                     btnText.color = normalTextColor;
             }
-            panel.SetActive(val);
+            if (panel != null)
+                panel.SetActive(val);
+            else
+                Debug.LogWarning(string.Format("TabButton {0} has no panel attached.", gameObject.name));
         }
 
         // emit event for TabGroup

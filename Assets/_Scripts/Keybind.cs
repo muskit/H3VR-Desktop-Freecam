@@ -19,7 +19,7 @@ namespace DesktopFreecam
 
         private void Update()
         {
-            keycodeDisplay.text = MeatKitPlugin.cfgKeyboard[control].Value.ToString();
+            keycodeDisplay.text = Settings.cfgKeyboard[control].Value.ToString();
         }
     }
 }

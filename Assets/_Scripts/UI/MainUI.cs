@@ -7,7 +7,9 @@ namespace DesktopFreecam
 {
 	public class MainUI : MonoBehaviour
 	{
-		public static GameObject freecam;
+		public static GameObject manager;
+
+        private bool desktopEnabled = false;
 
 		// UI elements
 		public Button uiToggleButton;
@@ -15,9 +17,6 @@ namespace DesktopFreecam
 
         // extra windows
         private GameObject uiOptionsWindow;
-
-		private bool freecamEnabled = false;
-        private bool uiOptionsEnabled = false;
 
 		// Use this for initialization
 		void Awake()
@@ -30,25 +29,25 @@ namespace DesktopFreecam
 
 		public void SetFreecamEnable(bool val)
 		{
-			freecamEnabled = val;
+			desktopEnabled = val;
 			Text btnText = uiToggleButton.GetComponentInChildren<Text>();
-			if (freecamEnabled)
+			if (desktopEnabled)
 			{
-                freecam = Instantiate(MeatKitPlugin.bundle.LoadAsset<GameObject>("Freecam"));
-                DontDestroyOnLoad(freecam);
-                btnText.text = "Disable Freecam";
+                manager = Instantiate(MeatKitPlugin.bundle.LoadAsset<GameObject>("SpectatorManager"));
+                DontDestroyOnLoad(manager);
+
+                btnText.text = "Disable";
 			}
 			else
 			{
-				Destroy(freecam);
-				//freecam = null; // unnecessary?
-				btnText.text = "Enable Freecam";
+				Destroy(manager);
+				btnText.text = "Enable";
 			}
 		}
 
 		private void ToggleFreecam()
         {
-			SetFreecamEnable(!freecamEnabled);
+			SetFreecamEnable(!desktopEnabled);
         }
 
         private void ToggleOptionsUI()
@@ -63,5 +62,17 @@ namespace DesktopFreecam
                 Destroy(uiOptionsWindow);
             }
         }
-	}
+
+        private void Update()
+        {
+            if (desktopEnabled)
+            {
+                
+            }
+            else
+            {
+
+            }
+        }
+    }
 }

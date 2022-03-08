@@ -1,18 +1,21 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class CameraPage : MonoBehaviour
+namespace DesktopFreecam
 {
-    public SliderEntryBinder fovBinder;
-    public SliderEntryBinder flySpeedBinder;
-    public SliderEntryBinder speedUpBinder;
-    public SliderEntryBinder speedDnBinder;
-    
-    void Awake()
+    public class CameraPage : MonoBehaviour
     {
-        fovBinder.SetConfigEntry(MeatKitPlugin.cfgCameraFov);
-        flySpeedBinder.SetConfigEntry(MeatKitPlugin.cfgCameraFlySpeed);
-        speedUpBinder.SetConfigEntry(MeatKitPlugin.cfgCameraFlyFastMult);
-        speedDnBinder.SetConfigEntry(MeatKitPlugin.cfgCameraFlySlowMult);
+        public SliderEntryBinder fovBinder;
+        public SliderEntryBinder flySpeedBinder;
+        public SliderEntryBinder speedUpBinder;
+        public SliderEntryBinder speedDnBinder;
+
+        void Awake()
+        {
+            fovBinder.SetConfigEntry(Settings.cfgCameraFov);
+            flySpeedBinder.SetConfigEntry(Settings.cfgCameraFlySpeed);
+            speedUpBinder.SetConfigEntry(Settings.cfgCameraFlyFastMult);
+            speedDnBinder.SetConfigEntry(Settings.cfgCameraFlySlowMult);
+        }
     }
 }

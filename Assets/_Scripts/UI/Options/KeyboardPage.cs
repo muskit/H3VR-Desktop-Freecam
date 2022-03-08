@@ -9,7 +9,7 @@ namespace DesktopFreecam
         None, Selected, Rebinding
     }
 
-    public class Keyboard : MonoBehaviour
+    public class KeyboardPage : MonoBehaviour
     {
         private static readonly System.Array keycodes = System.Enum.GetValues(typeof(KeyCode));
 
@@ -130,7 +130,7 @@ namespace DesktopFreecam
                             if (code != KeyCode.Escape)
                             {
                                 KBControls control = keybindEntries[curBindIdx].GetComponent<Keybind>().control;
-                                MeatKitPlugin.cfgKeyboard[control].Value = code;
+                                Settings.cfgKeyboard[control].Value = code;
                             }
                             EndRebinding();
                             break;

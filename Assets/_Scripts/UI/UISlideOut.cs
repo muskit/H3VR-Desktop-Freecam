@@ -9,6 +9,7 @@ public class UISlideOut : MonoBehaviour
     public Button slideButton;
     public bool slideFromRight;
 
+    private float closePosX;
     private bool isOpen;
     public float animationTime;
 
@@ -18,6 +19,7 @@ public class UISlideOut : MonoBehaviour
     {
         rectTransform = GetComponent<RectTransform>();
         slideButton.onClick.AddListener(HandleButton);
+        closePosX = rectTransform.anchoredPosition.x;
 
         CheckState();
     }
@@ -67,7 +69,7 @@ public class UISlideOut : MonoBehaviour
         }
         else // closing animation
         {
-            float targetPoint = rectTransform.sizeDelta.x;
+            float targetPoint = closePosX;
             if (slideFromRight)
             {
                 Vector2 startingPos = rectTransform.anchoredPosition;

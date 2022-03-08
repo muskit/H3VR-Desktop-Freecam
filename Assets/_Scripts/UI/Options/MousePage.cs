@@ -6,7 +6,7 @@ namespace DesktopFreecam
 {
     public enum ScrollWheelMode { MoveSpeed, FieldOfView }
 
-    public class Mouse : MonoBehaviour
+    public class MousePage : MonoBehaviour
     {
         public Toggle tglPitchReverse;
         public Toggle tglYawReverse;
@@ -16,30 +16,30 @@ namespace DesktopFreecam
         void Awake()
         {
             tglPitchReverse.onValueChanged.AddListener(TogglePitchReverse);
-            tglPitchReverse.isOn = MeatKitPlugin.cfgMousePitchFlip.Value;
+            tglPitchReverse.isOn = Settings.cfgMousePitchFlip.Value;
 
             tglYawReverse.onValueChanged.AddListener(ToggleYawReverse);
-            tglYawReverse.isOn = MeatKitPlugin.cfgMouseYawFlip.Value;
+            tglYawReverse.isOn = Settings.cfgMouseYawFlip.Value;
 
-            sensitivityBinder.SetConfigEntry(MeatKitPlugin.cfgMouseSensitivity);
+            sensitivityBinder.SetConfigEntry(Settings.cfgMouseSensitivity);
 
-            ddScrollMode.value = (int)MeatKitPlugin.cfgScrollMode.Value;
+            ddScrollMode.value = (int)Settings.cfgScrollMode.Value;
             ddScrollMode.onValueChanged.AddListener(SetWheelMode);
         }
 
         private void TogglePitchReverse(bool newVal)
         {
-            MeatKitPlugin.cfgMousePitchFlip.Value = newVal;
+            Settings.cfgMousePitchFlip.Value = newVal;
         }
 
         private void ToggleYawReverse(bool newVal)
         {
-            MeatKitPlugin.cfgMouseYawFlip.Value = newVal;
+            Settings.cfgMouseYawFlip.Value = newVal;
         }
 
         private void SetWheelMode(int idx)
         {
-            MeatKitPlugin.cfgScrollMode.Value = (ScrollWheelMode)idx;
+            Settings.cfgScrollMode.Value = (ScrollWheelMode)idx;
         }
     }
 }

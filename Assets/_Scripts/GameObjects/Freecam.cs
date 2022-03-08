@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -12,9 +13,8 @@ namespace DesktopFreecam
     //   * FreecamUI manages Freecam objects
 	class Freecam : MonoBehaviour
 	{
-        //public Rigidbody rigidBody;
         public CharacterController characterController;
-        public Camera camera;
+        public new Camera camera;
 		public ControlType lookMode;
 		public float joystickSpeed;
 
@@ -34,10 +34,6 @@ namespace DesktopFreecam
 		private GameObject vrCamera;
         private GameObject povCamera;
 
-		// UI
-		private Toggle uiHideFromPlayerToggle;
-		private Toggle uiPIPToggle;
-
         #region INITIALIZATION
         private void Awake()
 		{
@@ -45,22 +41,15 @@ namespace DesktopFreecam
             height = characterController.height;
 			lookMode = ControlType.KBMouse;
 			joystickSpeed = 15;
-            SceneManager.activeSceneChanged += OnSceneChanged;
 
-            // UI
-            uiHideFromPlayerToggle = transform.FindDeepChild("VisibilityToggle").GetComponent<Toggle>();
-            uiPIPToggle = transform.FindDeepChild("PIPToggle").GetComponent<Toggle>();
-            uiHideFromPlayerToggle.onValueChanged.AddListener(SetVisibleToPlayer);
-            uiPIPToggle.onValueChanged.AddListener(SetPIP);
-            transform.FindDeepChild("Panel").GetComponent<RectTransform>()
-                .CopyFrom(MeatKitPlugin.mainUI.transform.FindDeepChild("Panel").GetComponent<RectTransform>());
+            Settings.freecamVisibleToPlayer.ValueChanged += OnVRVisibilityChange;
+            SceneManager.activeSceneChanged += OnSceneChanged;
         }
         
 		private void Start()
 		{
-		    // Initial state
-            SetVisibleToPlayer(false);
-			SetPIP(false);
+            // Initial state
+            SetVisibleToPlayer(Settings.freecamVisibleToPlayer.Value);
 			DelayedGoToPlayer();
             SetVRCamera();
         }
@@ -105,38 +94,30 @@ namespace DesktopFreecam
             }
         }
 
-        public void SetPIP(bool pipEnabled)
+        private void OnVRVisibilityChange(object sender, EventArgs e)
         {
-            if (pipEnabled)
-            {
-                povCamera = Instantiate(MeatKitPlugin.bundle.LoadAsset<GameObject>("POVCamera"));
-                DontDestroyOnLoad(povCamera);
-            }
-            else
-            {
-                Destroy(povCamera);
-            }
+            SetVisibleToPlayer(Settings.freecamVisibleToPlayer.Value);
         }
 
         #region UPDATE
         private void UpdateInputMovement()
         {
             // Speed modifier
-            if (Input.GetKey(MeatKitPlugin.cfgKeyboard[KBControls.SlowDown].Value))
+            if (Input.GetKey(Settings.cfgKeyboard[KBControls.SlowDown].Value))
             {
-                moveSpeed = MeatKitPlugin.cfgCameraFlySlowMult.Value * MeatKitPlugin.cfgCameraFlySpeed.Value;
+                moveSpeed = Settings.cfgCameraFlySlowMult.Value * Settings.cfgCameraFlySpeed.Value;
             }
-            else if (Input.GetKey(MeatKitPlugin.cfgKeyboard[KBControls.SpeedUp].Value))
+            else if (Input.GetKey(Settings.cfgKeyboard[KBControls.SpeedUp].Value))
             {
-                moveSpeed = MeatKitPlugin.cfgCameraFlyFastMult.Value * MeatKitPlugin.cfgCameraFlySpeed.Value;
+                moveSpeed = Settings.cfgCameraFlyFastMult.Value * Settings.cfgCameraFlySpeed.Value;
             }
             else
-                moveSpeed = MeatKitPlugin.cfgCameraFlySpeed.Value;
+                moveSpeed = Settings.cfgCameraFlySpeed.Value;
 
             // Crouch state
             if (physicsEnabled)
             {
-                if (Input.GetKeyDown(MeatKitPlugin.cfgKeyboard[KBControls.Descend].Value))
+                if (Input.GetKeyDown(Settings.cfgKeyboard[KBControls.Descend].Value))
                 {
                     characterController.height = height / 2;
 
@@ -144,13 +125,13 @@ namespace DesktopFreecam
                     pos.y -= height / 2;
                     characterController.transform.position = pos;
                 }
-                if (Input.GetKey(MeatKitPlugin.cfgKeyboard[KBControls.Descend].Value))
+                if (Input.GetKey(Settings.cfgKeyboard[KBControls.Descend].Value))
                 {
-                    moveSpeed *= MeatKitPlugin.cfgCameraFlySlowMult.Value;
+                    moveSpeed *= Settings.cfgCameraFlySlowMult.Value;
                 }
 
                 // Un-crouch
-                if (Input.GetKeyUp(MeatKitPlugin.cfgKeyboard[KBControls.Descend].Value))
+                if (Input.GetKeyUp(Settings.cfgKeyboard[KBControls.Descend].Value))
                 {
                     characterController.height = height;
 
@@ -164,27 +145,27 @@ namespace DesktopFreecam
 
             // Movement
             inputDeltaMove = Vector3.zero;
-            if (Input.GetKey(MeatKitPlugin.cfgKeyboard[KBControls.MoveForward].Value))
+            if (Input.GetKey(Settings.cfgKeyboard[KBControls.MoveForward].Value))
             {
                 inputDeltaMove += camera.transform.forward;
             }
-            if (Input.GetKey(MeatKitPlugin.cfgKeyboard[KBControls.MoveBackward].Value))
+            if (Input.GetKey(Settings.cfgKeyboard[KBControls.MoveBackward].Value))
             {
                 inputDeltaMove -= camera.transform.forward;
             }
-            if (Input.GetKey(MeatKitPlugin.cfgKeyboard[KBControls.MoveLeft].Value))
+            if (Input.GetKey(Settings.cfgKeyboard[KBControls.MoveLeft].Value))
             {
                 inputDeltaMove -= camera.transform.right;
             }
-            if (Input.GetKey(MeatKitPlugin.cfgKeyboard[KBControls.MoveRight].Value))
+            if (Input.GetKey(Settings.cfgKeyboard[KBControls.MoveRight].Value))
             {
                 inputDeltaMove += camera.transform.right;
             }
-            if (Input.GetKey(MeatKitPlugin.cfgKeyboard[KBControls.Ascend].Value))
+            if (Input.GetKey(Settings.cfgKeyboard[KBControls.Ascend].Value))
             {
                 inputDeltaMove += Vector3.up;
             }
-            if (Input.GetKey(MeatKitPlugin.cfgKeyboard[KBControls.Descend].Value))
+            if (Input.GetKey(Settings.cfgKeyboard[KBControls.Descend].Value))
             {
                 inputDeltaMove -= Vector3.up;
             }
@@ -209,7 +190,7 @@ namespace DesktopFreecam
             }
 
             // Jump
-            if (Input.GetKey(MeatKitPlugin.cfgKeyboard[KBControls.Ascend].Value) && characterController.isGrounded)
+            if (Input.GetKey(Settings.cfgKeyboard[KBControls.Ascend].Value) && characterController.isGrounded)
                 verticalVelocity += jumpVel;
 
             // Movement
@@ -223,13 +204,13 @@ namespace DesktopFreecam
         private void Look()
         {
             // Look
-            float mouseX = Input.GetAxis("Horizontal") * (MeatKitPlugin.cfgMouseYawFlip.Value ? -1 : 1);
-            float mouseY = Input.GetAxis("Vertical") * (MeatKitPlugin.cfgMousePitchFlip.Value ? 1 : -1);
+            float mouseX = Input.GetAxis("Horizontal") * (Settings.cfgMouseYawFlip.Value ? -1 : 1);
+            float mouseY = Input.GetAxis("Vertical") * (Settings.cfgMousePitchFlip.Value ? 1 : -1);
 
             if (lookMode == ControlType.KBMouse) // Mouse axes don't require deltaTime
             {
-                currentRotation.x = Mathf.Clamp(currentRotation.x + MeatKitPlugin.cfgMouseSensitivity.Value / 10 * mouseY, -89.99f, 89.99f);
-                currentRotation.y += MeatKitPlugin.cfgMouseSensitivity.Value / 10 * mouseX;
+                currentRotation.x = Mathf.Clamp(currentRotation.x + Settings.cfgMouseSensitivity.Value / 10 * mouseY, -89.99f, 89.99f);
+                currentRotation.y += Settings.cfgMouseSensitivity.Value / 10 * mouseX;
             }
             else if (lookMode == ControlType.Controller) // Controller (needs configuration by SHIFT-starting game)
             {
@@ -243,17 +224,17 @@ namespace DesktopFreecam
         {
             if (Mathf.Abs(Input.mouseScrollDelta.y) > 0.05f)
             {
-                switch (MeatKitPlugin.cfgScrollMode.Value)
+                switch (Settings.cfgScrollMode.Value)
                 {
                     case ScrollWheelMode.MoveSpeed:
-                        float newVal = MeatKitPlugin.cfgCameraFlySpeed.Value + 0.6f * Input.mouseScrollDelta.y;
+                        float newVal = Settings.cfgCameraFlySpeed.Value + 0.6f * Input.mouseScrollDelta.y;
                         if (newVal > 0)
-                            MeatKitPlugin.cfgCameraFlySpeed.Value = newVal;
+                            Settings.cfgCameraFlySpeed.Value = newVal;
                         break;
                     case ScrollWheelMode.FieldOfView:
-                        newVal = MeatKitPlugin.cfgCameraFov.Value + 2 * Input.mouseScrollDelta.y;
+                        newVal = Settings.cfgCameraFov.Value + 2 * Input.mouseScrollDelta.y;
                         if (5 < newVal && newVal < 179.99)
-                            MeatKitPlugin.cfgCameraFov.Value = newVal;
+                            Settings.cfgCameraFov.Value = newVal;
                         break;
                 }
             }
@@ -261,13 +242,13 @@ namespace DesktopFreecam
 
         private void Update()
 		{
-            camera.fieldOfView = MeatKitPlugin.cfgCameraFov.Value;
+            camera.fieldOfView = Settings.cfgCameraFov.Value;
 
             if (Input.GetKeyDown(KeyCode.F))
                 physicsEnabled = !physicsEnabled;
 
             // controls toggle
-            if (Input.GetKeyDown(MeatKitPlugin.cfgKeyboard[KBControls.ToggleControls].Value))
+            if (Input.GetKeyDown(Settings.cfgKeyboard[KBControls.ToggleControls].Value))
 				controlEnabled = !controlEnabled;
 
             // Input & movement
@@ -275,7 +256,7 @@ namespace DesktopFreecam
 			{
 				Cursor.lockState = CursorLockMode.Locked;
                 UpdateInputMovement();
-                if (Input.GetKey(MeatKitPlugin.cfgKeyboard[KBControls.TeleportToPlayer].Value))
+                if (Input.GetKey(Settings.cfgKeyboard[KBControls.TeleportToPlayer].Value))
                 {
                     GoToPlayer();
                 }
@@ -306,6 +287,9 @@ namespace DesktopFreecam
         private void OnDestroy()
         {
             Destroy(povCamera);
+
+            Settings.freecamVisibleToPlayer.ValueChanged -= OnVRVisibilityChange;
+            SceneManager.activeSceneChanged -= OnSceneChanged;
         }
     }
 }
