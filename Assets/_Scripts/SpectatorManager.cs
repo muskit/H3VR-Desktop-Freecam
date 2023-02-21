@@ -46,7 +46,7 @@ namespace DesktopFreecam
         // trig by Settings.pipEnabled.ValueChanged
         private void OnCfgPipEnabledChanged(object sender, EventArgs e)
         {
-            pipWindow.gameObject.SetActive(((State<bool>)sender).Value);
+            //pipWindow.gameObject.SetActive(((State<bool>)sender).Value);
             UpdateView();
         }
 
@@ -61,16 +61,18 @@ namespace DesktopFreecam
             // TODO: use FistVR/game manager function?
             if (Util.FVRGetSpectatorMode() == ControlOptions.DesktopCameraMode.Default)
             {
-                specCamera = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Camera>();
+                //specCamera = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Camera>();
+                Util.FVRSetSpectatorMode(ControlOptions.DesktopCameraMode.HDSpectator);
+            }
+            var foundObj = GameObject.Find("[SpectatorCamera](Clone)");
+            if (foundObj != null)
+            {
+                specCamera = foundObj.GetComponent<Camera>();
+                specCamera.cullingMask = -268435457;
             }
             else
             {
-                var foundObj = GameObject.Find("[SpectatorCamera](Clone)");
-                if (foundObj != null)
-                {
-                    specCamera = foundObj.GetComponent<Camera>();
-                    specCamera.cullingMask = -268435457;
-                }
+                Console.WriteLine("WARNING: unable to find the game's spectator camera!");
             }
         }
 
@@ -79,10 +81,12 @@ namespace DesktopFreecam
             GetSpecCamera();
             
             pipWindow.gameObject.SetActive(Settings.pipEnabled.Value);
+            Console.WriteLine("Main view mode: " + Settings.mainViewMode.Value);
             switch (Settings.mainViewMode.Value) // TODO: work out logic (CRITICAL)
             {
                 case SpectatorMode.FVRSpectator:
-                    specCamera.targetTexture.Release();
+                    if (specCamera.targetTexture != null)
+                        specCamera.targetTexture.Release();
                     if (Settings.pipEnabled.Value)
                     {
                         freecam.gameObject.SetActive(true);
@@ -98,10 +102,6 @@ namespace DesktopFreecam
                     if (Settings.pipEnabled.Value)
                     {
                         pipWindow.SetCamera(specCamera);
-                    }
-                    else
-                    {
-                        Util.FVRSetSpectatorMode(ControlOptions.DesktopCameraMode.Default);
                     }
                     break;
             }

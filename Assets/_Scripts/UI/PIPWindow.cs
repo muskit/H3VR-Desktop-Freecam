@@ -39,7 +39,6 @@ namespace DesktopFreecam
 
         public void SetWindowDraggable(bool val)
         {
-            SetWindowDraggable(Settings.specWindowDraggable.Value);
             uiDraggable.enabled = val;
         }
 

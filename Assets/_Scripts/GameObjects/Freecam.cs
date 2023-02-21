@@ -25,8 +25,8 @@ namespace DesktopFreecam
         private float moveSpeed;
         private float verticalVelocity = 0;
 
-        private float gravitationalAccel = .2f;
-        private float jumpVel = 6.5f;
+        private float gravitationalAccel = .13f;
+        private float jumpVel = 5;
 
         private Vector3 inputDeltaMove = Vector3.zero;
 		private Vector2 currentRotation = Vector2.zero;
@@ -209,8 +209,8 @@ namespace DesktopFreecam
 
             if (lookMode == ControlType.KBMouse) // Mouse axes don't require deltaTime
             {
-                currentRotation.x = Mathf.Clamp(currentRotation.x + Settings.cfgMouseSensitivity.Value / 10 * mouseY, -89.99f, 89.99f);
-                currentRotation.y += Settings.cfgMouseSensitivity.Value / 10 * mouseX;
+                currentRotation.x = Mathf.Clamp(currentRotation.x + Settings.cfgMouseSensitivity.Value / 20 * mouseY, -89.99f, 89.99f);
+                currentRotation.y += Settings.cfgMouseSensitivity.Value / 20 * mouseX;
             }
             else if (lookMode == ControlType.Controller) // Controller (needs configuration by SHIFT-starting game)
             {
