@@ -1,10 +1,13 @@
 ﻿#if H3VR_IMPORTED
-using HarmonyLib;
 using System.IO;
 using System.Reflection;
 using System.Collections.Generic;
+
+using HarmonyLib;
 using BepInEx;
+using BepInEx.Logging;
 using BepInEx.Configuration;
+
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -12,27 +15,29 @@ using FistVR;
 using DesktopFreecam;
 
 /*
-    * SUPER LARGE WARNING ABOUT THIS CLASS
-    * This class can be used to add custom behaviour to your generated BepInEx plugin.
-    * Please note, however, that all of the things in here already are REQUIRED and CANNOT BE CHANGED.
-    * There are LARGE TEXT WARNINGS above such items so you don't forget.
-    * You may add to this class so long as you do not modify anything with those notices (lest you want build errors)
-    *
-    * The class name and BepInPlugin attribute are modified at build-time to reflect your build settings.
-    * BepInDependency attributes will automatically be generated if they're required by a build item, otherwise
-    * may add it yourself here.
-    */
+ * SUPER LARGE WARNING ABOUT THIS CLASS
+ * This is the default and fallback class that MeatKit uses as a template to generate a BepInEx plugin
+ * when building your mod. DO NOT MODIFY THIS FILE AT ALL, IN ANY WAY.
+ *
+ * If you want to add custom behavior to your mod, you should make a copy of this class, and put it inside
+ * the main namespace of your mod (that namespace can be found by opening the 'Allowed Namespaces' list on your build
+ * profile). MeatKit will then detect and use that class instead of this one, for that one specific profile.
+ *
+ * HOWEVER, YOU MUST KEEP ALL OF THE STUFF FROM THIS TEMPLATE, otherwise MeatKit may fail to correctly build
+ * your plugin, or your mod may fail to correctly load.
+ */
 
 // DO NOT REMOVE OR CHANGE ANY OF THESE ATTRIBUTES
 [BepInPlugin("MeatKit", "MeatKit Plugin", "1.0.0")]
 [BepInProcess("h3vr.exe")]
 
-// DO NOT CHANGE THE NAME OF THIS CLASS.
+// DO NOT CHANGE THE NAME OF THIS CLASS OR THE BASE CLASS. If you're making a custom plugin, make sure it extends BaseUnityPlugin.
 public class MeatKitPlugin : BaseUnityPlugin
 {
     // DO NOT CHANGE OR REMOVE THIS FIELD.
 #pragma warning disable 414
     private static readonly string BasePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+    internal new static ManualLogSource Logger;
 #pragma warning restore 414
 
     public static AssetBundle bundle;
@@ -46,10 +51,19 @@ public class MeatKitPlugin : BaseUnityPlugin
         new Harmony("muskit.DesktopFreecam").PatchAll();
     }
 
+    // You are free to edit this method, however please ensure LoadAssets is still called somewhere inside it.
     private void Awake()
     {
-        Logger.LogInfo("BasePath: " + BasePath);
-        bundle = AssetBundle.LoadFromFile(Path.Combine(BasePath, "msk_desktopfreecam"));
+        /// BEGIN MEATKIT REQUIRED CODE ///
+        // This lets you use your BepInEx-provided logger from other scripts in your project
+        Logger = base.Logger;
+        
+        // You may place code before/after this, but do not remove this call to LoadAssets
+        LoadAssets();
+        /// END MEATKIT REQUIRED CODE ///
+        
+        // load AssetBundle
+        bundle = AssetBundle.LoadFromFile(Path.Combine(BasePath, "muskit_desktopfreecam"));
 
         // --- CONFIGURATION ---
         // [Mouse]
@@ -109,9 +123,9 @@ public class MeatKitPlugin : BaseUnityPlugin
             "Window resolution (Y)",
             400);
         Settings.cfgPipUnlocked = Config.Bind(
-           "Picture in picture",
-           "Window is draggable",
-           true);
+            "Picture in picture",
+            "Window is draggable",
+            true);
         // [Keyboard] (oh boy)
         Settings.cfgKeyboard = new Dictionary<KBControls, ConfigEntry<KeyCode>>
             (System.Enum.GetNames(typeof(KBControls)).Length);
@@ -161,19 +175,24 @@ public class MeatKitPlugin : BaseUnityPlugin
             KeyCode.F3);
 
         SceneManager.activeSceneChanged += OnSceneChange;
-
-        LoadAssets(); // DO NOT REMOVE
     }
 
     private void Start()
     {
-        mainUI = Instantiate(bundle.LoadAsset<GameObject>("MainUI"));
+		Logger.LogInfo("A");
+		mainUI = Instantiate(bundle.LoadAsset<GameObject>("MainUI"));
+        Logger.LogInfo("B");
         DontDestroyOnLoad(mainUI);
+        Logger.LogInfo("C");
         SetUIVisibility(uiIsVisible);
 
+        Logger.LogInfo("D");
         var transIntro = Instantiate(bundle.LoadAsset<GameObject>("IntroText")).transform;
+        Logger.LogInfo("E");
         transIntro.SetParent(GameObject.FindGameObjectWithTag("MainCamera").transform);
+        Logger.LogInfo("F");
         transIntro.position = new Vector3(999, 999, 999);
+        Logger.LogInfo("G");
     }
 
     private void OnSceneChange(Scene from, Scene to)
@@ -198,6 +217,7 @@ public class MeatKitPlugin : BaseUnityPlugin
     // DO NOT CHANGE OR REMOVE THIS METHOD. It's contents will be overwritten when building your package.
     private void LoadAssets()
     {
+        // Code to load your build items will be generated at build-time and inserted here
     }
 }
 #endif

@@ -14,7 +14,7 @@ MonoBehaviour:
   PackageName: Desktop_Spectator
   Author: muskit
   Version: 1.0.0
-  Icon: {fileID: 2800000, guid: f999bddab1821b94691466e97cc6891f, type: 3}
+  Icon: {fileID: 2800000, guid: 4f1f559576bb0db42abf9a28839df918, type: 3}
   ReadMe: {fileID: 102900000, guid: e6135ed590275884a8247e126c3fe23b, type: 3}
   WebsiteURL: 
   Description: A desktop-controlled spectator view.
@@ -23,8 +23,8 @@ MonoBehaviour:
   AdditionalNamespaces:
   - DesktopFreecam
   - Nobi.UiRoundedCorners
+  ApplyHarmonyPatches: 1
   BuildItems:
   - {fileID: 11400000, guid: b1a6ca12ea8215645a3548258389893a, type: 2}
-  BundleCompressionType: 2
-  BuildAction: 2
-  OutputProfile: 
+  BuildAction: 1
+  OutputProfile: C:/Users/Alex/AppData/Roaming/r2modmanPlus-local/H3VR/profiles/dev

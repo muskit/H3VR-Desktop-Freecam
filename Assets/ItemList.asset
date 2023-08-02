@@ -11,7 +11,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f6d6db4144b34551885c304840edfb62, type: 3}
   m_Name: ItemList
   m_EditorClassIdentifier: 
-  BundleName: msk_desktopfreecam
+  BundleName: muskit_desktopfreecam
   Items:
   - {fileID: 1325033608028116, guid: c4560441a71afad4280c9ae24cc4f19b, type: 2}
   - {fileID: 1329424790310364, guid: 7ba8fc903002f3245a8fdfe0a12de4e7, type: 2}
